@@ -16,6 +16,11 @@
   transform: translateY(-2px);
 }
 
+.calculator-card--coming-soon {
+  opacity: 0.72;
+  cursor: default;
+}
+
 .calculator-card__icon {
   font-size: 1.75rem;
   margin-bottom: 0.875rem;
@@ -45,4 +50,11 @@
   color: var(--color-primary);
   background: var(--color-primary-light);
   border-radius: 999px;
+}
+
+.calculator-card__action {
+  margin-top: 1rem;
+  color: var(--color-primary);
+  font-size: 0.8125rem;
+  font-weight: 700;
 }

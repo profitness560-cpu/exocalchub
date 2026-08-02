@@ -1,0 +1,2 @@
+import { useTheme, type ThemePreference } from '../hooks/useTheme'
+export function ThemeToggle() { const { preference, setPreference } = useTheme(); const next: ThemePreference = preference === 'light' ? 'dark' : preference === 'dark' ? 'system' : 'light'; return <button type="button" className="theme-toggle" onClick={() => setPreference(next)} aria-label={`Theme: ${preference}. Switch to ${next}`} title={`Theme: ${preference}`}>{preference === 'dark' ? '☾' : preference === 'light' ? '☀' : '◐'}</button> }

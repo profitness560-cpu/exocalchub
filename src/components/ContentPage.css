@@ -1,0 +1,27 @@
+.content-page {
+  min-height: 100%;
+  padding-bottom: 5rem;
+  background: linear-gradient(180deg, var(--color-surface), var(--color-bg) 24rem);
+}
+
+.content-page__body {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.content-page__body h2 {
+  margin: 2rem 0 0.625rem;
+  color: var(--color-text);
+  font-size: 1.25rem;
+}
+
+.content-page__body p,
+.content-page__body li {
+  color: var(--color-text-muted);
+  line-height: 1.75;
+}
+
+.content-page__body ul {
+  padding-left: 1.25rem;
+}

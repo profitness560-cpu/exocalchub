@@ -18,8 +18,9 @@ export function Categories({ categories }: CategoriesProps) {
         {categories.map((category) => (
           <a
             key={category.id}
-            href={`#category-${category.id}`}
+            href="#calculators"
             className="category-card"
+            aria-label={`Browse ${category.name} calculators`}
           >
             <span className="category-card__icon" aria-hidden="true">
               {category.icon}

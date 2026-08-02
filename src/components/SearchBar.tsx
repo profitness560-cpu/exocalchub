@@ -17,19 +17,21 @@ export function SearchBar({
         Search calculators
       </label>
       <div className="search-bar__wrapper">
-        <span className="search-bar__icon" aria-hidden="true">
-          🔍
-        </span>
+        <span className="search-bar__icon" aria-hidden="true">⌕</span>
         <input
           id="calculator-search"
           type="search"
           className="search-bar__input"
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(event) => onChange(event.target.value)}
           placeholder={placeholder}
           autoComplete="off"
+          aria-describedby="calculator-search-help"
         />
       </div>
+      <p className="search-bar__help" id="calculator-search-help">
+        Search by calculator name, category, or what you need to calculate.
+      </p>
     </div>
   )
 }

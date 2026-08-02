@@ -1,0 +1,10 @@
+{
+  "name": "ExoCalcHub",
+  "short_name": "ExoCalcHub",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#0f766e",
+  "background_color": "#ffffff",
+  "description": "Fast, clear online calculators for everyday decisions.",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

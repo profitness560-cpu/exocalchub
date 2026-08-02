@@ -18,17 +18,15 @@ export function CalculatorCard({ calculator }: CalculatorCardProps) {
     </>
   )
 
-  if (calculator.path) {
-    return (
-      <Link to={calculator.path} className="calculator-card">
-        {content}
-      </Link>
-    )
-  }
-
-  return (
-    <a href={`#${calculator.id}`} className="calculator-card">
+  return calculator.path ? (
+    <Link to={calculator.path} className="calculator-card">
       {content}
-    </a>
+      <span className="calculator-card__action">Open calculator →</span>
+    </Link>
+  ) : (
+    <div className="calculator-card calculator-card--coming-soon" aria-disabled="true">
+      {content}
+      <span className="calculator-card__action">Coming soon</span>
+    </div>
   )
 }

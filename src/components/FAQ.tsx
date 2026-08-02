@@ -1,0 +1,1 @@
+export function FAQ({ items }: { items: [string, string][] }) { return <div className="faq">{items.map(([question, answer]) => <details key={question}><summary>{question}</summary><p>{answer}</p></details>)}</div> }

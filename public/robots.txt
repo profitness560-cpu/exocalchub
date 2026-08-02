@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://exocalchub.com/sitemap.xml

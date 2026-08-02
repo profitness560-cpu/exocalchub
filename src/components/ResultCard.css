@@ -1,0 +1,4 @@
+.result-card__header { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+.result-card__header h2 { margin:0; }
+.result-card__actions { display:flex; flex-wrap:wrap; gap:.4rem; }
+.result-card__actions button { border:1px solid var(--color-border); border-radius:999px; background:var(--color-bg); color:var(--color-primary-dark); padding:.4rem .65rem; cursor:pointer; }
