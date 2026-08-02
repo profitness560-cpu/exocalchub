@@ -1,12 +1,14 @@
-import { useState, type FormEvent, type ChangeEvent } from 'react'
+import { useState, type ChangeEvent, type FormEvent } from 'react'
 import type { BMIResult, BMIValidationErrors } from '../../calculators/bmi'
 import {
   computeBMIResult,
   validateBMIInputs,
 } from '../../calculators/bmi'
-import { FormField } from '../FormField'
-import { Button } from '../Button'
-import { CalculatorPanel } from '../CalculatorPanel'
+import {
+  CalculatorButton,
+  CalculatorCard,
+  CalculatorInput,
+} from '../calculator'
 import { BMIResultSection } from './BMIResultSection'
 import './BMICalculatorForm.css'
 
@@ -49,9 +51,9 @@ export function BMICalculatorForm() {
 
   return (
     <div className="bmi-calculator-form">
-      <CalculatorPanel>
+      <CalculatorCard>
         <form className="bmi-calculator-form__form" onSubmit={handleCalculate}>
-          <FormField
+          <CalculatorInput
             label="Height (cm)"
             id="bmi-height"
             name="height"
@@ -62,7 +64,7 @@ export function BMICalculatorForm() {
             onChange={handleHeightChange}
             error={errors.height}
           />
-          <FormField
+          <CalculatorInput
             label="Weight (kg)"
             id="bmi-weight"
             name="weight"
@@ -74,15 +76,15 @@ export function BMICalculatorForm() {
             error={errors.weight}
           />
           <div className="bmi-calculator-form__actions">
-            <Button type="submit" variant="primary">
+            <CalculatorButton type="submit" variant="primary">
               Calculate BMI
-            </Button>
-            <Button type="button" variant="secondary" onClick={handleReset}>
+            </CalculatorButton>
+            <CalculatorButton type="button" variant="secondary" onClick={handleReset}>
               Reset
-            </Button>
+            </CalculatorButton>
           </div>
         </form>
-      </CalculatorPanel>
+      </CalculatorCard>
 
       {result && <BMIResultSection result={result} />}
     </div>

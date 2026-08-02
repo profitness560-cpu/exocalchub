@@ -1,13 +1,18 @@
-import type { BMIResult } from '../../calculators/bmi'
 import {
   BMI_FORMULA,
   HEALTHY_BMI_EXPLANATION,
 } from '../../calculators/bmi'
-import { CategoryBadge } from '../CategoryBadge'
+import { CategoryBadge, FormulaSection } from '../calculator'
 import './BMIResultSection.css'
 
 interface BMIResultSectionProps {
-  result: BMIResult
+  result: {
+    value: number
+    category: {
+      label: string
+      variant: 'underweight' | 'normal' | 'overweight' | 'obese'
+    }
+  }
 }
 
 export function BMIResultSection({ result }: BMIResultSectionProps) {
@@ -32,10 +37,7 @@ export function BMIResultSection({ result }: BMIResultSectionProps) {
           <p className="bmi-result__info-text">{HEALTHY_BMI_EXPLANATION}</p>
         </div>
 
-        <div className="bmi-result__formula">
-          <h3 className="bmi-result__info-title">BMI Formula</h3>
-          <p className="bmi-result__formula-text">{BMI_FORMULA}</p>
-        </div>
+        <FormulaSection title="BMI Formula" formula={BMI_FORMULA} />
       </div>
     </section>
   )
