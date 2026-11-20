@@ -3,9 +3,10 @@ import './Categories.css'
 
 interface CategoriesProps {
   categories: Category[]
+  onSelect?: (categoryId: string) => void
 }
 
-export function Categories({ categories }: CategoriesProps) {
+export function Categories({ categories, onSelect }: CategoriesProps) {
   return (
     <section className="categories" id="categories">
       <div className="categories__header">
@@ -16,18 +17,22 @@ export function Categories({ categories }: CategoriesProps) {
       </div>
       <div className="categories__grid">
         {categories.map((category) => (
-          <a
+          <button
             key={category.id}
-            href="#calculators"
+            type="button"
             className="category-card"
             aria-label={`Browse ${category.name} calculators`}
+            onClick={() => {
+              onSelect?.(category.id)
+              document.getElementById('calculators')?.scrollIntoView({ behavior: 'smooth' })
+            }}
           >
             <span className="category-card__icon" aria-hidden="true">
               {category.icon}
             </span>
             <h3 className="category-card__name">{category.name}</h3>
             <p className="category-card__description">{category.description}</p>
-          </a>
+          </button>
         ))}
       </div>
     </section>

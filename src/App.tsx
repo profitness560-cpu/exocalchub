@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { useEffect } from 'react'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { MainLayout } from './layouts/MainLayout'
 import { HomePage } from './pages/HomePage'
 import { InfoPage } from './pages/InfoPages'
@@ -6,13 +7,25 @@ import { NotFoundPage } from './pages/NotFoundPage'
 import { CalculatorPage } from './pages/CalculatorPage'
 import { BMICalculatorPage } from './pages/BMICalculatorPage'
 import { MortgageCalculatorPage } from './pages/MortgageCalculatorPage'
+import { ScientificCalculatorPage } from './pages/ScientificCalculatorPage'
 import { calculators } from './data/calculators'
 
-const dedicatedCalculatorIds = new Set(['bmi', 'mortgage'])
+const dedicatedCalculatorIds = new Set(['bmi', 'mortgage', 'scientific'])
+
+// Phase 2: the SPA did not scroll to the top on navigation, so a calculator
+// page opened scrolled down at the previous page's position.
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
+  return null
+}
 
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route
           path="/"
@@ -32,6 +45,14 @@ function App() {
           element={
             <MainLayout>
               <BMICalculatorPage />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/calculators/scientific"
+          element={
+            <MainLayout>
+              <ScientificCalculatorPage />
             </MainLayout>
           }
         />

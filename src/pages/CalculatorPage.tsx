@@ -51,7 +51,13 @@ export function CalculatorPage({ calculator }: CalculatorPageProps) {
         <div className="calculator-page__form">
           {calculator.fields.map((field) => <div className="calculator-page__field" key={field.id}>
             <label htmlFor={`field-${field.id}`}>{field.label}{field.unit ? ` (${field.unit})` : ''}</label>
-            <input id={`field-${field.id}`} type={field.id === 'expression' ? 'text' : 'number'} inputMode={field.id === 'expression' ? 'text' : 'decimal'} value={values[field.id]} min={field.min} max={field.max} step={field.step} onChange={(event) => setValues({ ...values, [field.id]: event.target.value })} aria-invalid={Boolean(errors[field.id])} aria-describedby={errors[field.id] ? `error-${field.id}` : undefined} />
+            {field.type === 'select' ? (
+              <select id={`field-${field.id}`} value={values[field.id]} onChange={(event) => setValues({ ...values, [field.id]: event.target.value })} aria-invalid={Boolean(errors[field.id])} aria-describedby={errors[field.id] ? `error-${field.id}` : undefined}>
+                {field.options?.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+              </select>
+            ) : (
+              <input id={`field-${field.id}`} type={field.id === 'expression' ? 'text' : 'number'} inputMode={field.id === 'expression' ? 'text' : 'decimal'} value={values[field.id]} min={field.min} max={field.max} step={field.step} onChange={(event) => setValues({ ...values, [field.id]: event.target.value })} aria-invalid={Boolean(errors[field.id])} aria-describedby={errors[field.id] ? `error-${field.id}` : undefined} />
+            )}
             {errors[field.id] && <span className="calculator-page__error" id={`error-${field.id}`} role="alert">{errors[field.id]}</span>}
           </div>)}
           <div className="calculator-page__actions"><Button type="button" onClick={calculate}>Calculate</Button><Button type="button" variant="secondary" onClick={reset}>Reset</Button></div>

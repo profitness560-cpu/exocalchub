@@ -38,6 +38,10 @@
   border-radius: var(--radius-lg);
   text-decoration: none;
   color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  text-align: left;
+  cursor: pointer;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 

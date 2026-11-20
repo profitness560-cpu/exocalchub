@@ -68,3 +68,55 @@ describe('Phase 1 regression tests', () => {
     expect(calculate('bmr', { weight: 70, height: 175, age: 30, sex: 0 }).headline).toBe('1,483 calories/day')
   })
 })
+
+describe('Phase 2 regression tests', () => {
+  it('savings: monthly deposits compound monthly (end of month)', () => {
+    // $1,000 + $100/month, 5%, 5 years -> $1,276.28 + $6,800.61 = $8,076.89.
+    // (The audit's $8,083.97 used an unstated deposit-timing assumption;
+    // this implementation states end-of-month deposits in the calculator.)
+    expect(calculate('savings', { principal: 1000, rate: 5, years: 5, contributions: 0, monthlyContributions: 100 }).headline).toContain('8,076.89')
+  })
+  it('savings: monthly deposits = 0 gives the same result as the old annual-only model', () => {
+    expect(calculate('savings', { principal: 1000, rate: 5, years: 5, contributions: 100, monthlyContributions: 0 }).headline)
+      .toBe(calculate('compound-interest', { principal: 1000, rate: 5, years: 5, contributions: 100 }).headline)
+  })
+  it('savings: the monthly-deposit field exists', () => {
+    expect(get('savings').fields.some((field) => field.id === 'monthlyContributions')).toBe(true)
+  })
+  it('VAT: adds VAT (net -> gross) by default and removes VAT (gross -> net)', () => {
+    expect(calculate('vat', { principal: 100, rate: 20, mode: 0 }).headline).toContain('120.00')
+    expect(calculate('vat', { principal: 120, rate: 20, mode: 1 }).headline).toContain('100.00')
+    expect(calculate('vat', { principal: 100, rate: 20 }).headline).toContain('120.00')
+  })
+  it('percentage: X% of Y and X is what % of Y', () => {
+    expect(calculate('percentage', { principal: 200, rate: 15, mode: 0 }).headline).toBe('30')
+    expect(calculate('percentage', { principal: 40, rate: 200, mode: 1 }).headline).toBe('20%')
+    expect(calculate('percentage', { principal: 40, rate: 0, mode: 1 }).headline).toBe('Invalid result')
+  })
+  it('age: uses day and month, not just the birth year', () => {
+    const today = new Date()
+    const year = today.getFullYear()
+    // Born 20 years ago today: exactly 20.
+    expect(calculate('age', { birthDay: today.getDate(), birthMonth: today.getMonth() + 1, birthYear: year - 20 }).headline).toContain('20')
+    // Born 20 years ago, birthday later this year: still 19.
+    const later = new Date(year, today.getMonth() + 1, today.getDate())
+    expect(calculate('age', { birthDay: later.getDate(), birthMonth: later.getMonth() + 1, birthYear: year - 20 }).headline).toContain('19')
+    // Invalid date is rejected, not silently rolled over.
+    expect(calculate('age', { birthDay: 30, birthMonth: 2, birthYear: 2000 }).headline).toBe('Invalid date')
+  })
+  it('age: year-only input still works (month/day default to 1 January)', () => {
+    expect(calculate('age', { birthYear: new Date().getFullYear() - 25 }).headline).toContain('25')
+  })
+  it('sex and unit fields are now dropdowns, not bare 1/0 numbers', () => {
+    expect(get('bmr').fields.find((field) => field.id === 'sex')?.type).toBe('select')
+    expect(get('bmr').fields.find((field) => field.id === 'sex')?.options?.map((o) => o.label)).toEqual(['Male', 'Female'])
+    expect(get('volume').fields.find((field) => field.id === 'unit')?.type).toBe('select')
+    expect(get('volume').fields.find((field) => field.id === 'unit')?.options?.map((o) => o.label)).toEqual(['liters', 'US gallons'])
+  })
+  it('scientific: the generic calculator now uses the safe parser, not Function()', () => {
+    expect(calculate('scientific', { expression: 'sqrt(16)' as unknown as number }).headline).toBe('4')
+    expect(calculate('scientific', { expression: 'sin(30)' as unknown as number }).headline).toBe('0.5')
+    expect(calculate('scientific', { expression: '2^3' as unknown as number }).headline).toBe('8')
+    expect(calculate('scientific', { expression: 'sqrt(-1)' as unknown as number }).headline).toBe('Invalid expression')
+  })
+})
