@@ -32,9 +32,15 @@ export function InfoPage({ kind }: InfoPageProps) {
   return (
     <ContentPage title={title} description={intro}>
       {kind === 'about' && <>
-        <p>ExoCalcHub is a focused calculator platform built to make common calculations quick, understandable, and accessible on any device.</p>
-        <h2>Our approach</h2>
-        <p>We prioritize clear inputs, transparent formulas, helpful explanations, and a calm interface. Tools are added carefully and reviewed for sensible validation.</p>
+        <p>ExoCalcHub is a free online calculator platform with 29 calculators for everyday decisions. You can work out health numbers such as body mass index and daily calories, money questions such as loan payments and savings growth, everyday maths such as percentages and averages, and unit conversions such as metres to feet or Celsius to Fahrenheit — all without creating an account.</p>
+        <h2>What it helps with</h2>
+        <p>The tools are built for the small calculations that come up in real life: checking whether a loan fits your budget, planning what to save each month, converting a recipe or a speed limit while travelling, or understanding a health number before a check-up. Each calculator asks only for the numbers it needs and shows the result with the steps behind it, so you can see how the answer was reached.</p>
+        <h2>How to use the calculators</h2>
+        <p>Pick a calculator, enter your numbers, and read the result. Every calculator page also explains the method in plain language, works through a realistic example, and answers the questions people most often ask about that calculation — so the page is useful even if you have never used that kind of calculator before.</p>
+        <h2>Clear results, honestly presented</h2>
+        <p>Results are estimates based on the numbers you enter. Formulas and assumptions are shown on the page, and where a result depends on an assumption — such as an interest rate staying the same, or a mortgage covering principal and interest only — the page says so. Check the assumptions before relying on a result for an important decision, and consult a qualified professional where the decision matters.</p>
+        <h2>Accessible by design</h2>
+        <p>The calculators work on phones, tablets and computers, with large readable inputs and clear labels. There is no account to create and no fee to use them. Your inputs are processed in your browser and are not sent to us by the calculator itself.</p>
         <h2>Explore the tools</h2>
         <p><Link to="/#calculators">Browse all calculators</Link> or start with our <Link to="/calculators/bmi">BMI calculator</Link>.</p>
       </>}
