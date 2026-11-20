@@ -5,6 +5,7 @@ import { PageHeader } from '../components/PageHeader'
 import { calculatorMap, type Calculator } from '../data/calculators'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { breadcrumbList, faqPage } from '../lib/structuredData'
+import { buildShareUrl, parseSharedValues } from '../lib/shareUrl'
 import { useFavorites } from '../hooks/useFavorites'
 import { useRecentCalculations } from '../hooks/useRecentCalculations'
 import { track } from '../utils/analytics'
@@ -16,9 +17,48 @@ import './CalculatorPage.css'
 
 interface CalculatorPageProps { calculator: Calculator }
 
+// Field validation, shared by the form and by shared-link restoration.
+// Same rules in both paths: required, numeric (finite), within min/max.
+// Select fields carry numeric option values, so Number() covers them too.
+// The 'expression' field (Scientific, dedicated page) passes its raw text
+// through to the safe parser; it is never executed.
+function validateFieldValues(calculator: Calculator, values: Record<string, string>): { numeric: Record<string, number>; errors: Record<string, string> } {
+  const nextErrors: Record<string, string> = {}
+  const numeric: Record<string, number> = {}
+  for (const field of calculator.fields) {
+    const raw = values[field.id]?.trim() ?? ''
+    if (!raw) { nextErrors[field.id] = `Enter ${field.label.toLowerCase()}.`; continue }
+    if (field.id === 'expression') { numeric[field.id] = raw as unknown as number; continue }
+    const value = Number(raw)
+    if (!Number.isFinite(value)) nextErrors[field.id] = 'Enter a valid number.'
+    else if (field.min !== undefined && value < field.min) nextErrors[field.id] = `Must be at least ${field.min}.`
+    else if (field.max !== undefined && value > field.max) nextErrors[field.id] = `Must be no more than ${field.max}.`
+    else numeric[field.id] = value
+  }
+  return { numeric, errors: nextErrors }
+}
+
 export function CalculatorPage({ calculator }: CalculatorPageProps) {
-  const [values, setValues] = useState<Record<string, string>>(() => Object.fromEntries(calculator.fields.map((field) => [field.id, field.defaultValue ?? ''])))
-  const [result, setResult] = useState<ReturnType<Calculator['calculate']> | null>(null)
+  // Shared-link restoration (finding F5-09): a link built by buildShareUrl
+  // carries the calculator's inputs. Only known field names are accepted,
+  // they are validated exactly like form input, and the result is
+  // recomputed — never taken from the URL. Invalid or missing parameters
+  // are ignored and the page opens with its defaults. This is derived
+  // initial state, not an effect, so no state is set after mount. A
+  // restored result is not recorded in history and no calculator_use event
+  // is sent for it — it is not a new calculation by this visitor.
+  const [sharedValues] = useState<Record<string, string> | null>(() => {
+    const shared = parseSharedValues(window.location.search, calculator)
+    if (!shared) return null
+    const { errors } = validateFieldValues(calculator, shared)
+    return Object.keys(errors).length ? null : shared
+  })
+  const [values, setValues] = useState<Record<string, string>>(() => sharedValues ?? Object.fromEntries(calculator.fields.map((field) => [field.id, field.defaultValue ?? ''])))
+  const [result, setResult] = useState<ReturnType<Calculator['calculate']> | null>(() => {
+    if (!sharedValues) return null
+    const { numeric } = validateFieldValues(calculator, sharedValues)
+    return calculator.calculate(numeric)
+  })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const { isFavorite, toggleFavorite } = useFavorites()
   const { addCalculation } = useRecentCalculations()
@@ -36,18 +76,7 @@ export function CalculatorPage({ calculator }: CalculatorPageProps) {
   })
 
   function calculate() {
-    const nextErrors: Record<string, string> = {}
-    const numeric: Record<string, number> = {}
-    for (const field of calculator.fields) {
-      const raw = values[field.id]?.trim() ?? ''
-      if (!raw) { nextErrors[field.id] = `Enter ${field.label.toLowerCase()}.`; continue }
-      if (field.id === 'expression') { numeric[field.id] = raw as unknown as number; continue }
-      const value = Number(raw)
-      if (!Number.isFinite(value)) nextErrors[field.id] = 'Enter a valid number.'
-      else if (field.min !== undefined && value < field.min) nextErrors[field.id] = `Must be at least ${field.min}.`
-      else if (field.max !== undefined && value > field.max) nextErrors[field.id] = `Must be no more than ${field.max}.`
-      else numeric[field.id] = value
-    }
+    const { numeric, errors: nextErrors } = validateFieldValues(calculator, values)
     if (Object.keys(nextErrors).length) { setErrors(nextErrors); setResult(null); track('error', { id: calculator.id }); return }
     const nextResult = calculator.calculate(numeric); setErrors({}); setResult(nextResult); track('calculator_use', { id: calculator.id }); addCalculation({ id: calculator.id, name: calculator.name, inputs: values, result: nextResult.headline })
   }
@@ -75,7 +104,7 @@ export function CalculatorPage({ calculator }: CalculatorPageProps) {
           <div className="calculator-page__actions"><Button type="button" onClick={calculate}>Calculate</Button><Button type="button" variant="secondary" onClick={reset}>Reset</Button></div>
         </div>
       </section>
-      <ResultCard title={result?.headline ?? 'Your result'} onCopy={result ? () => navigator.clipboard?.writeText(result.headline) : undefined} onShare={result ? () => { const url = `${window.location.origin}${calculator.path}?result=${encodeURIComponent(result.headline)}`; navigator.share?.({ title: calculator.name, url }).catch(() => navigator.clipboard?.writeText(url)); track('share', { id: calculator.id }) } : undefined} onPrint={result ? () => window.print() : undefined}>{result ? <><ul>{result.details.map((detail) => <li key={detail}>{detail}</li>)}</ul>{result.steps && <><h3>Calculation steps</h3><ul>{result.steps.map((step) => <li key={step}>{step}</li>)}</ul></>}</> : <p>Complete the fields to see a clear, calculated result.</p>}<Formula>{calculator.formula}</Formula></ResultCard>
+      <ResultCard title={result?.headline ?? 'Your result'} onCopy={result ? () => navigator.clipboard?.writeText(result.headline) : undefined} onShare={result ? () => { const url = buildShareUrl(calculator, values); navigator.share?.({ title: calculator.name, url }).catch(() => navigator.clipboard?.writeText(url)); track('share', { id: calculator.id }) } : undefined} onPrint={result ? () => window.print() : undefined}>{result ? <><ul>{result.details.map((detail) => <li key={detail}>{detail}</li>)}</ul>{result.steps && <><h3>Calculation steps</h3><ul>{result.steps.map((step) => <li key={step}>{step}</li>)}</ul></>}</> : <p>Complete the fields to see a clear, calculated result.</p>}<Formula>{calculator.formula}</Formula></ResultCard>
     </div>
     <section className="calculator-page__details" aria-labelledby="calculator-faq-title">
       <h2>About this calculator</h2><p>{calculator.description} Review the formula and steps above to understand the estimate.</p>
