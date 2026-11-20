@@ -1,0 +1,11 @@
+# Netlify configuration for ExoCalcHub (SPA)
+# The app is a Vite + React Router single-page app. Without this redirect,
+# Netlify serves only real files, so every direct / refresh / bookmarked
+# deep URL (e.g. /calculators/bmi, /about) returned a 404.
+# This sends all unmatched paths to index.html with a 200, letting
+# React Router render the correct page client-side.
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
