@@ -9,3 +9,41 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Security headers (Phase 5 remediation, findings F5-01 and F5-04).
+# Content-Security-Policy notes:
+# - script-src 'self' plus googletagmanager.com: the app's own scripts are
+#   same-origin, and the optional Google Analytics 4 loader (env-gated,
+#   Phase 4) comes from googletagmanager.com. No 'unsafe-inline' or
+#   'unsafe-eval' is used: there is no inline JavaScript in the app, and
+#   the JSON-LD structured-data blocks (type="application/ld+json") are
+#   not executable scripts, so script-src does not apply to them.
+# - style-src 'self': all CSS is same-origin and the app uses no inline
+#   styles, so no 'unsafe-inline' is needed here either.
+# - connect-src includes google-analytics.com because gtag sends its
+#   beacons there when analytics is enabled. With no Measurement ID
+#   configured, nothing is loaded and nothing connects.
+# - frame-ancestors 'none' (plus X-Frame-Options: DENY below) blocks the
+#   site from being embedded in any frame.
+# - No Cache-Control is set here: index.html and other unhashed files keep
+#   Netlify's default (max-age=0, must-revalidate) so updates reach
+#   visitors promptly. Long-term caching applies only to /assets/* below.
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
+
+# Long-term caching for content-hashed assets only (finding F5-04).
+# Vite emits JS/CSS filenames containing a content hash, so a cached copy
+# can never be stale: changed content gets a new URL. Never apply this to
+# index.html or other unhashed files.
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
