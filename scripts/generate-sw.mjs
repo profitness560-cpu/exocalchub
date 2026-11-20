@@ -11,8 +11,16 @@
 // broken service worker can never be deployed silently.
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const distDir = new URL('../dist/', import.meta.url).pathname
+// fileURLToPath (not .pathname) converts the script's file URL to a native
+// path. .pathname stays percent-encoded and keeps a leading slash before
+// the drive letter on Windows (e.g. /C:/Users/HP/My%20Projects/...), so
+// any project path containing a space or special character would make
+// readdirSync/readFileSync fail with ENOENT. fileURLToPath decodes the
+// percent-encoding and returns a proper Windows path (C:\...) or POSIX
+// path, so this script works on Windows 11, macOS and Linux alike.
+const distDir = fileURLToPath(new URL('../dist/', import.meta.url))
 const swPath = join(distDir, 'sw.js')
 const assetsDir = join(distDir, 'assets')
 
