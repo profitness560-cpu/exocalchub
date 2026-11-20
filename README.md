@@ -70,10 +70,12 @@ without one, no analytics script is loaded and nothing is sent.
 
 What is tracked: one `page_view` per route change (React Router navigation
 is counted exactly once — gtag is configured with `send_page_view: false`
-and the app sends page views manually), plus `calculator_use`,
-`search`, `favorite`, `share` and `error` events carrying only the
-calculator id. **Calculator input values and results are never sent** —
-the app's analytics payloads contain no value fields at all.
+and the app sends page views manually), plus `calculator_use`, `favorite`, `share` and `error` events carrying
+only the calculator id, and `search` events that record only that a search
+occurred (never the search text). **Calculator input values, results and
+search text are never sent** — the app's analytics payloads contain no
+value fields at all, and the search event is forwarded to GA4 without
+its query.
 
 Verify in GA4 under Reports → Realtime after the Measurement ID is set:
 visit the site and confirm page views and a `calculator_use` event appear.

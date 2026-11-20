@@ -41,7 +41,9 @@ function AnalyticsBridge() {
         payload: { id?: string; query?: string; message?: string }
       }>).detail
       if (name === 'calculator_use') trackGAEvent('calculator_use', { calculator_id: payload.id })
-      else if (name === 'search') trackGAEvent('search', { search_term: payload.query })
+      // Search events record only that a search happened — the query itself
+      // is never sent to analytics (owner decision, Phase 4 review).
+      else if (name === 'search') trackGAEvent('search')
       else if (name === 'favorite') trackGAEvent('favorite', { calculator_id: payload.id })
       else if (name === 'share') trackGAEvent('share', { calculator_id: payload.id })
       else if (name === 'error') trackGAEvent('error', { calculator_id: payload.id })

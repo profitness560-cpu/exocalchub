@@ -42,7 +42,7 @@ export function InfoPage({ kind }: InfoPageProps) {
         <h2>Information we collect</h2>
         <p>Calculator inputs are processed in your browser and are not sent to ExoCalcHub by the calculator itself. We do not require an account to use the platform.</p>
         <h2>Cookies and analytics</h2>
-        <p>When analytics is enabled, we use Google Analytics 4. It records which pages are visited and which calculators are used, using cookies. Calculator input values and results are processed in your browser and are never sent to analytics. Analytics is only active when a Measurement ID is configured; without one, no analytics script loads.</p>
+        <p>When analytics is enabled, we use Google Analytics 4. It records which pages are visited and which calculators are used, using cookies. Searches are recorded only as an event that a search happened — the search text itself is never sent. Calculator input values, results and search text are processed in your browser and are never sent to analytics. Analytics is only active when a Measurement ID is configured; without one, no analytics script loads.</p>
         <h2>Questions</h2>
         <p>For privacy questions, visit our <Link to="/contact">contact page</Link>.</p>
       </>}

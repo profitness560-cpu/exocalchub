@@ -9,6 +9,9 @@ describe('sitemap (Phase 4 SEO)', () => {
     execSync('node scripts/generate-sitemap.mjs', { cwd: join(__dirname, '..'), stdio: 'pipe' })
     const xml = readFileSync(join(__dirname, '..', 'public/sitemap.xml'), 'utf8')
     expect(xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>')).toBe(true)
+    // No lastmod: reliable per-page modification dates are unavailable,
+    // and stamping every URL with the build date would misstate changes.
+    expect(xml).not.toContain('<lastmod>')
     expect(xml).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
     const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1])
     expect(locs).toHaveLength(35)

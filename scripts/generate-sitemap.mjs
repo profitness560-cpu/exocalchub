@@ -10,6 +10,11 @@
  *  - all 29 calculator pages
  *  - the 5 information pages
  * It deliberately excludes the 404 page and any URL with a query string.
+ *
+ * No <lastmod> is emitted: reliable per-page modification dates are not
+ * available, and assigning the current build date to every URL would
+ * misstate when pages actually changed. lastmod is optional in the
+ * sitemap protocol, so omitting it is the accurate choice.
  */
 import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -44,7 +49,6 @@ if (calculatorPaths.length !== 29) {
   process.exit(1)
 }
 
-const today = new Date().toISOString().slice(0, 10)
 const entries = [
   { loc: '/', changefreq: 'daily', priority: '1.0' },
   ...calculatorPaths.map((path) => ({
@@ -64,7 +68,7 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
 ${entries
   .map(
     (entry) =>
-      `  <url><loc>${SITE_URL}${entry.loc}</loc><lastmod>${today}</lastmod><changefreq>${entry.changefreq}</changefreq><priority>${entry.priority}</priority></url>`,
+      `  <url><loc>${SITE_URL}${entry.loc}</loc><changefreq>${entry.changefreq}</changefreq><priority>${entry.priority}</priority></url>`,
   )
   .join('\n')}
 </urlset>

@@ -9,9 +9,10 @@ import { SITE_URL } from '../hooks/usePageMeta'
  * environment variable; it is a public identifier, not a secret.
  *
  * Privacy: only page paths and calculator ids are ever sent. Calculator
- * input values, results and search contents beyond the calculator name are
- * never passed to analytics — the app's track() payloads contain no value
- * fields at all (see src/utils/analytics.ts).
+ * input values, results and search text are never passed to analytics —
+ * the app's track() payloads contain no value fields at all (see
+ * src/utils/analytics.ts), and the search event is forwarded without its
+ * query (see the bridge in src/App.tsx).
  *
  * Page views: gtag is configured with send_page_view: false, and the App
  * sends exactly one page_view per route change (including the landing page).
