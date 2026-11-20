@@ -1,8 +1,12 @@
 import { CalculatorLayout } from '../components/calculator'
 import { MortgageCalculatorForm } from '../components/mortgage/MortgageCalculatorForm'
+import { CalculatorContent } from '../components/CalculatorContent'
+import { calculatorMap } from '../data/calculators'
 import { usePageMeta } from '../hooks/usePageMeta'
-import { breadcrumbList } from '../lib/structuredData'
+import { breadcrumbList, faqPage } from '../lib/structuredData'
 import { RelatedCalculators } from '../components/RelatedCalculators'
+
+const calculator = calculatorMap.get('mortgage')!
 
 export function MortgageCalculatorPage() {
   usePageMeta({
@@ -15,6 +19,7 @@ export function MortgageCalculatorPage() {
         { name: 'Home', path: '/' },
         { name: 'Mortgage Calculator', path: '/calculators/mortgage' },
       ]),
+      faqPage(calculator.faq),
     ],
   })
 
@@ -24,6 +29,7 @@ export function MortgageCalculatorPage() {
       description="Estimate your monthly payment, total interest, and total cost."
     >
       <MortgageCalculatorForm />
+      <CalculatorContent calculator={calculator} />
       <RelatedCalculators ids={['loan', 'investment-return']} />
     </CalculatorLayout>
   )

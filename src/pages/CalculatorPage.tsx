@@ -12,7 +12,7 @@ import { useRecentCalculations } from '../hooks/useRecentCalculations'
 import { track } from '../utils/analytics'
 import { FavoriteButton } from '../components/FavoriteButton'
 import { ResultCard } from '../components/ResultCard'
-import { FAQ } from '../components/FAQ'
+import { CalculatorContent } from '../components/CalculatorContent'
 import { Formula } from '../components/Formula'
 import './CalculatorPage.css'
 
@@ -87,8 +87,7 @@ export function CalculatorPage({ calculator }: CalculatorPageProps) {
       <ResultCard title={result?.headline ?? 'Your result'} onCopy={result ? () => navigator.clipboard?.writeText(result.headline) : undefined} onShare={result ? () => { const url = buildShareUrl(calculator, values); navigator.share?.({ title: calculator.name, url }).catch(() => navigator.clipboard?.writeText(url)); track('share', { id: calculator.id }) } : undefined} onPrint={result ? () => window.print() : undefined}>{result ? <><ul>{result.details.map((detail) => <li key={detail}>{detail}</li>)}</ul>{result.steps && <><h3>Calculation steps</h3><ul>{result.steps.map((step) => <li key={step}>{step}</li>)}</ul></>}</> : <p>Complete the fields to see a clear, calculated result.</p>}<Formula>{calculator.formula}</Formula></ResultCard>
     </div>
     <section className="calculator-page__details" aria-labelledby="calculator-faq-title">
-      <h2>About this calculator</h2><p>{calculator.description} Review the formula and steps above to understand the estimate.</p>
-      <h2 id="calculator-faq-title">Frequently asked questions</h2><FAQ items={calculator.faq} />
+      <CalculatorContent calculator={calculator} />
       {related.length > 0 && <><h2>Related calculators</h2><ul className="calculator-page__related">{related.map((item) => item && <li key={item.id}><Link to={item.path}>{item.name}</Link></li>)}</ul></>}
     </section>
   </article>

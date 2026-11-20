@@ -1,0 +1,7 @@
+.calculator-content h2 { margin: 1.75rem 0 .5rem; color: var(--color-text); font-size: 1.25rem; }
+.calculator-content h2:first-child { margin-top: 0; }
+.calculator-content p { color: var(--color-text-muted); line-height: 1.7; margin: 0 0 .75rem; }
+.calculator-content__example { margin: .5rem 0 0; padding: 1rem 1.25rem; border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-bg); display: grid; gap: .75rem; }
+.calculator-content__example div { display: grid; gap: .15rem; }
+.calculator-content__example dt { font-weight: 700; color: var(--color-text); font-size: .9rem; }
+.calculator-content__example dd { margin: 0; color: var(--color-text-muted); line-height: 1.7; }

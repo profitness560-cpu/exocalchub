@@ -1,8 +1,12 @@
 import { CalculatorLayout } from '../components/calculator'
 import { BMICalculatorForm } from '../components/bmi/BMICalculatorForm'
+import { CalculatorContent } from '../components/CalculatorContent'
+import { calculatorMap } from '../data/calculators'
 import { usePageMeta } from '../hooks/usePageMeta'
-import { breadcrumbList } from '../lib/structuredData'
+import { breadcrumbList, faqPage } from '../lib/structuredData'
 import { RelatedCalculators } from '../components/RelatedCalculators'
+
+const calculator = calculatorMap.get('bmi')!
 
 export function BMICalculatorPage() {
   usePageMeta({
@@ -15,6 +19,7 @@ export function BMICalculatorPage() {
         { name: 'Home', path: '/' },
         { name: 'BMI Calculator', path: '/calculators/bmi' },
       ]),
+      faqPage(calculator.faq),
     ],
   })
 
@@ -24,6 +29,7 @@ export function BMICalculatorPage() {
       description="Calculate your Body Mass Index instantly."
     >
       <BMICalculatorForm />
+      <CalculatorContent calculator={calculator} />
       <RelatedCalculators ids={['calorie', 'ideal-weight']} />
     </CalculatorLayout>
   )
