@@ -1,13 +1,18 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { MainLayout } from './layouts/MainLayout'
 import { HomePage } from './pages/HomePage'
-import { InfoPage } from './pages/InfoPages'
-import { NotFoundPage } from './pages/NotFoundPage'
-import { CalculatorPage } from './pages/CalculatorPage'
-import { BMICalculatorPage } from './pages/BMICalculatorPage'
-import { MortgageCalculatorPage } from './pages/MortgageCalculatorPage'
-import { ScientificCalculatorPage } from './pages/ScientificCalculatorPage'
+// Route-level lazy loading (Phase 5 remediation, finding F5-05): the home
+// page stays eager, but every other page loads on demand, so a first visit
+// downloads only the code for the page being viewed. The pages use named
+// exports, hence the .then() wrapper. Metadata, breadcrumbs and structured
+// data live inside the pages themselves, so they are unaffected.
+const InfoPage = lazy(() => import('./pages/InfoPages').then((m) => ({ default: m.InfoPage })))
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })))
+const CalculatorPage = lazy(() => import('./pages/CalculatorPage').then((m) => ({ default: m.CalculatorPage })))
+const BMICalculatorPage = lazy(() => import('./pages/BMICalculatorPage').then((m) => ({ default: m.BMICalculatorPage })))
+const MortgageCalculatorPage = lazy(() => import('./pages/MortgageCalculatorPage').then((m) => ({ default: m.MortgageCalculatorPage })))
+const ScientificCalculatorPage = lazy(() => import('./pages/ScientificCalculatorPage').then((m) => ({ default: m.ScientificCalculatorPage })))
 import { calculators } from './data/calculators'
 import { initGA, trackGAEvent, trackPageView } from './lib/ga4'
 
@@ -59,6 +64,7 @@ function App() {
     <BrowserRouter>
       <ScrollToTop />
       <AnalyticsBridge />
+      <Suspense fallback={<main className="loading-fallback" aria-busy="true"><p>Loading…</p></main>}>
       <Routes>
         <Route
           path="/"
@@ -112,6 +118,7 @@ function App() {
           ))}
         <Route path="*" element={<MainLayout><NotFoundPage /></MainLayout>} />
       </Routes>
+      </Suspense>
     </BrowserRouter>
   )
 }
