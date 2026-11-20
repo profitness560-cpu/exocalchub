@@ -1,0 +1,16 @@
+.related-calculators {
+  margin-top: 2.5rem;
+}
+
+.related-calculators__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+}
+
+.related-calculators__list a {
+  color: var(--color-accent, #0f766e);
+}

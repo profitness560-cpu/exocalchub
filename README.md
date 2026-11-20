@@ -39,3 +39,41 @@ The app includes route-level metadata, canonical URLs, Open Graph tags, JSON-LD 
 
 - `/` — calculator directory and category overview
 - `/calculators/bmi` — BMI calculator
+
+## SEO
+
+- `public/sitemap.xml` is generated from the calculator data by
+  `scripts/generate-sitemap.mjs` (`npm run sitemap`). It runs automatically
+  before every build (`prebuild`) and fails the build if it finds anything
+  other than 29 calculators, so the sitemap can never silently go stale.
+  It lists the home page, all 29 calculator pages and the 5 information
+  pages — only valid, canonical, indexable URLs.
+- `public/robots.txt` allows all crawling and points to the sitemap.
+- Every page sets a unique title, meta description, canonical URL
+  (always `https://exocalchub.com`, never the serving origin) and Open Graph
+  tags via `src/hooks/usePageMeta.ts`. Calculator and information pages
+  also emit BreadcrumbList JSON-LD, and pages with visible FAQs emit
+  FAQPage JSON-LD. The 404 page is `noindex`.
+- The shared Open Graph image is `public/og-image.png` (1200×630).
+
+## Analytics (Google Analytics 4)
+
+GA4 is integrated but **inactive until a Measurement ID is configured** —
+without one, no analytics script is loaded and nothing is sent.
+
+1. In Google Analytics, create a GA4 property for exocalchub.com and copy
+   its Measurement ID (`G-XXXXXXXXXX`).
+2. Locally: copy `.env.example` to `.env.local` and set
+   `VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX`, then restart `npm run dev`.
+3. For the live site: set the same variable in Netlify under
+   Site settings → Environment variables, then redeploy.
+
+What is tracked: one `page_view` per route change (React Router navigation
+is counted exactly once — gtag is configured with `send_page_view: false`
+and the app sends page views manually), plus `calculator_use`,
+`search`, `favorite`, `share` and `error` events carrying only the
+calculator id. **Calculator input values and results are never sent** —
+the app's analytics payloads contain no value fields at all.
+
+Verify in GA4 under Reports → Realtime after the Measurement ID is set:
+visit the site and confirm page views and a `calculator_use` event appear.

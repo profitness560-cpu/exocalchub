@@ -9,6 +9,7 @@ import { BMICalculatorPage } from './pages/BMICalculatorPage'
 import { MortgageCalculatorPage } from './pages/MortgageCalculatorPage'
 import { ScientificCalculatorPage } from './pages/ScientificCalculatorPage'
 import { calculators } from './data/calculators'
+import { initGA, trackGAEvent, trackPageView } from './lib/ga4'
 
 const dedicatedCalculatorIds = new Set(['bmi', 'mortgage', 'scientific'])
 
@@ -22,10 +23,40 @@ function ScrollToTop() {
   return null
 }
 
+// GA4 bridge (Phase 4): initialises analytics once, sends exactly one
+// page_view per route change, and forwards the app's own analytics events
+// (src/utils/analytics.ts) to GA4. Calculator ids only — never input values.
+function AnalyticsBridge() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    initGA()
+  }, [])
+  useEffect(() => {
+    trackPageView(pathname)
+  }, [pathname])
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const { event: name, payload } = (event as CustomEvent<{
+        event: string
+        payload: { id?: string; query?: string; message?: string }
+      }>).detail
+      if (name === 'calculator_use') trackGAEvent('calculator_use', { calculator_id: payload.id })
+      else if (name === 'search') trackGAEvent('search', { search_term: payload.query })
+      else if (name === 'favorite') trackGAEvent('favorite', { calculator_id: payload.id })
+      else if (name === 'share') trackGAEvent('share', { calculator_id: payload.id })
+      else if (name === 'error') trackGAEvent('error', { calculator_id: payload.id })
+    }
+    window.addEventListener('exocalchub:analytics', handler)
+    return () => window.removeEventListener('exocalchub:analytics', handler)
+  }, [])
+  return null
+}
+
 function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <AnalyticsBridge />
       <Routes>
         <Route
           path="/"

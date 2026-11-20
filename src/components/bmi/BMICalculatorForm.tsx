@@ -10,6 +10,7 @@ import {
   CalculatorInput,
 } from '../calculator'
 import { BMIResultSection } from './BMIResultSection'
+import { track } from '../../utils/analytics'
 import './BMICalculatorForm.css'
 
 export function BMICalculatorForm() {
@@ -32,6 +33,7 @@ export function BMICalculatorForm() {
 
     setErrors({})
     setResult(computeBMIResult(values))
+    track('calculator_use', { id: 'bmi' })
   }
 
   function handleReset() {

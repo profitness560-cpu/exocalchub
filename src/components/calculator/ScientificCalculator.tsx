@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { calculateScientific, type AngleMode } from '../../lib/scientificParser'
+import { track } from '../../utils/analytics'
 import './ScientificCalculator.css'
 
 /**
@@ -36,6 +37,7 @@ export function ScientificCalculator() {
       setResult(out.headline)
       setSteps(out.steps?.[0] ?? '')
       setError('')
+      track('calculator_use', { id: 'scientific' })
     }
   }
 

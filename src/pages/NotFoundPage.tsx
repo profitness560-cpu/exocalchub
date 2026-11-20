@@ -7,6 +7,7 @@ export function NotFoundPage() {
     title: 'Page Not Found | ExoCalcHub',
     description: 'The page you requested could not be found on ExoCalcHub.',
     path: '/404',
+    noindex: true,
   })
 
   return (

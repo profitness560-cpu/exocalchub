@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ContentPage } from '../components/ContentPage'
 import { usePageMeta } from '../hooks/usePageMeta'
+import { breadcrumbList } from '../lib/structuredData'
 
 interface InfoPageProps {
   kind: 'about' | 'privacy' | 'terms' | 'contact' | 'disclaimer'
@@ -16,7 +17,17 @@ const pageDetails = {
 
 export function InfoPage({ kind }: InfoPageProps) {
   const [title, description, intro] = pageDetails[kind]
-  usePageMeta({ title: `${title} | ExoCalcHub`, description, path: `/${kind}` })
+  usePageMeta({
+    title: `${title} | ExoCalcHub`,
+    description,
+    path: `/${kind}`,
+    structuredData: [
+      breadcrumbList([
+        { name: 'Home', path: '/' },
+        { name: title, path: `/${kind}` },
+      ]),
+    ],
+  })
 
   return (
     <ContentPage title={title} description={intro}>
@@ -31,7 +42,7 @@ export function InfoPage({ kind }: InfoPageProps) {
         <h2>Information we collect</h2>
         <p>Calculator inputs are processed in your browser and are not sent to ExoCalcHub by the calculator itself. We do not require an account to use the platform.</p>
         <h2>Cookies and analytics</h2>
-        <p>If analytics or similar services are introduced, this policy will be updated to explain what is collected and why. We aim to collect only what is necessary to improve the service.</p>
+        <p>When analytics is enabled, we use Google Analytics 4. It records which pages are visited and which calculators are used, using cookies. Calculator input values and results are processed in your browser and are never sent to analytics. Analytics is only active when a Measurement ID is configured; without one, no analytics script loads.</p>
         <h2>Questions</h2>
         <p>For privacy questions, visit our <Link to="/contact">contact page</Link>.</p>
       </>}

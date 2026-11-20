@@ -4,6 +4,7 @@ import { Button } from '../components/Button'
 import { PageHeader } from '../components/PageHeader'
 import { calculatorMap, type Calculator } from '../data/calculators'
 import { usePageMeta } from '../hooks/usePageMeta'
+import { breadcrumbList, faqPage } from '../lib/structuredData'
 import { useFavorites } from '../hooks/useFavorites'
 import { useRecentCalculations } from '../hooks/useRecentCalculations'
 import { track } from '../utils/analytics'
@@ -21,7 +22,18 @@ export function CalculatorPage({ calculator }: CalculatorPageProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const { isFavorite, toggleFavorite } = useFavorites()
   const { addCalculation } = useRecentCalculations()
-  usePageMeta({ title: `${calculator.name} | ExoCalcHub`, description: calculator.description, path: calculator.path })
+  usePageMeta({
+    title: `${calculator.name} | ExoCalcHub`,
+    description: calculator.description,
+    path: calculator.path,
+    structuredData: [
+      breadcrumbList([
+        { name: 'Home', path: '/' },
+        { name: calculator.name, path: calculator.path },
+      ]),
+      faqPage(calculator.faq),
+    ],
+  })
 
   function calculate() {
     const nextErrors: Record<string, string> = {}

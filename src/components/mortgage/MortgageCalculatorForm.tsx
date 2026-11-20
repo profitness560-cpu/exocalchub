@@ -15,6 +15,7 @@ import {
   ResultCard,
 } from '../calculator'
 import './MortgageCalculatorForm.css'
+import { track } from '../../utils/analytics'
 
 export function MortgageCalculatorForm() {
   const [loanAmount, setLoanAmount] = useState('')
@@ -41,6 +42,7 @@ export function MortgageCalculatorForm() {
 
     setErrors({})
     setResult(computeMortgageResult(values))
+    track('calculator_use', { id: 'mortgage' })
   }
 
   function handleReset() {

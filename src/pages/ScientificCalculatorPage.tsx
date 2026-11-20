@@ -3,6 +3,8 @@ import { ScientificCalculator } from '../components/calculator/ScientificCalcula
 import { FormulaSection } from '../components/calculator/FormulaSection'
 import { FAQ } from '../components/FAQ'
 import { usePageMeta } from '../hooks/usePageMeta'
+import { breadcrumbList, faqPage } from '../lib/structuredData'
+import { RelatedCalculators } from '../components/RelatedCalculators'
 
 /**
  * Dedicated Scientific Calculator page (Phase 2).
@@ -10,11 +12,24 @@ import { usePageMeta } from '../hooks/usePageMeta'
  * so users get DEG/RAD, scientific buttons and specific error messages.
  * The generic CalculatorPage route is not used for this calculator.
  */
+const scientificFaq: [string, string][] = [
+  ['Are the results exact?', 'Results are estimates based on the inputs you provide. Verify important decisions with an appropriate professional.'],
+  ['How are results calculated?', 'Each tool shows its formula and calculation steps so you can understand the estimate.'],
+  ['Degrees or radians?', 'Use the DEG / RAD selector above the keypad. In DEG mode, sin(30) = 0.5. In RAD mode, sin(pi/6) = 0.5.'],
+]
+
 export function ScientificCalculatorPage() {
   usePageMeta({
     title: 'Scientific Calculator | ExoCalcHub',
     description: 'Evaluate arithmetic expressions with scientific functions: square roots, powers, trigonometry, logarithms and more.',
     path: '/calculators/scientific',
+    structuredData: [
+      breadcrumbList([
+        { name: 'Home', path: '/' },
+        { name: 'Scientific Calculator', path: '/calculators/scientific' },
+      ]),
+      faqPage(scientificFaq),
+    ],
   })
 
   return (
@@ -31,13 +46,8 @@ export function ScientificCalculatorPage() {
         exponentials, factorials and the constants π and e.
       </p>
       <h2>Frequently asked questions</h2>
-      <FAQ
-        items={[
-          ['Are the results exact?', 'Results are estimates based on the inputs you provide. Verify important decisions with an appropriate professional.'],
-          ['How are results calculated?', 'Each tool shows its formula and calculation steps so you can understand the estimate.'],
-          ['Degrees or radians?', 'Use the DEG / RAD selector above the keypad. In DEG mode, sin(30) = 0.5. In RAD mode, sin(pi/6) = 0.5.'],
-        ]}
-      />
+      <FAQ items={scientificFaq} />
+      <RelatedCalculators ids={['percentage', 'fraction']} />
     </CalculatorLayout>
   )
 }
