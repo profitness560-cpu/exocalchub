@@ -4,7 +4,7 @@ import { SearchBar } from '../components/SearchBar'
 import { CalculatorCard } from '../components/CalculatorCard'
 import { Categories } from '../components/Categories'
 import { calculators } from '../data/calculators'
-import { categories } from '../data/categories'
+import { visibleCategories } from '../data/categories'
 import { useSearch } from '../hooks/useSearch'
 import { filterCalculators } from '../utils/filterCalculators'
 import './HomePage.css'
@@ -71,7 +71,7 @@ export function HomePage() {
 
       {!query && history.length > 0 && <section className="home-showcase" aria-labelledby="history-title"><div className="home-showcase__header"><h2 id="history-title">Recent calculations</h2><button type="button" onClick={clearHistory}>Clear history</button></div><ul className="history-list">{history.slice(0, 5).map((item) => <li key={`${item.id}-${item.timestamp}`}><span>{item.name}</span><strong>{item.result}</strong><time dateTime={item.timestamp}>{new Date(item.timestamp).toLocaleDateString()}</time></li>)}</ul></section>}
 
-      <Categories categories={categories} onSelect={(categoryId) => setQuery(categoryId)} />
+      <Categories categories={visibleCategories(calculators)} onSelect={(categoryId) => setQuery(categoryId)} />
     </>
   )
 }

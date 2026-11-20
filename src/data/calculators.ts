@@ -72,11 +72,17 @@ const definitions: Calculator[] = [
 
 const financeFields = (principalLabel = 'Principal', principalMin = 0.01): CalculatorField[] => [field('principal', principalLabel, '$', principalMin, 100000000), field('rate', 'Annual interest rate', '%', 0, 100), field('years', 'Term', 'years', 0.1, 100)]
 const loanCalc = ({ principal, rate, years }: Record<string, number>): CalculationResult => { const months = years * 12; const monthlyRate = rate / 1200; const payment = monthlyRate === 0 ? principal / months : principal * monthlyRate * (1 + monthlyRate) ** months / ((1 + monthlyRate) ** months - 1); const total = payment * months; return { headline: `$${money(payment)} / month`, details: [`Total paid: $${money(total)}`, `Total interest: $${money(total - principal)}`], steps: [`${n(months, 0)} monthly payments`, `Monthly rate: ${n(monthlyRate * 100, 4)}%`] } }
-const compoundCalc = ({ principal, rate, years, contributions = 0 }: Record<string, number>): CalculationResult => { const value = principal * (1 + rate / 100) ** years + contributions * (((1 + rate / 100) ** years - 1) / (rate / 100 || 1)); return { headline: `$${money(value)}`, details: [`Growth: $${money(value - principal - contributions * years)}`], steps: [`Future value = principal × (1 + rate)^years`, `Estimated balance: $${money(value)}`] } }
+// F-01 (Phase 3 corrective action): at 0% interest the annuity formula would
+// divide by the rate. The old code guarded with (rate / 100 || 1), which made
+// the contributions term 0 at 0% instead of contributions x years. For any
+// positive rate this is algebraically identical to the previous formula.
+const annuityValue = (contributions: number, rate: number, years: number): number =>
+  rate === 0 ? contributions * years : contributions * (((1 + rate / 100) ** years - 1) / (rate / 100))
+const compoundCalc = ({ principal, rate, years, contributions = 0 }: Record<string, number>): CalculationResult => { const value = principal * (1 + rate / 100) ** years + annuityValue(contributions, rate, years); return { headline: `$${money(value)}`, details: [`Growth: $${money(value - principal - contributions * years)}`], steps: [`Future value = principal × (1 + rate)^years`, `Estimated balance: $${money(value)}`] } }
 // Savings: annual deposits compound annually, monthly deposits compound monthly
 // (end of each month). With monthly contributions = 0 this is identical to compoundCalc.
 const savingsCalc = ({ principal, rate, years, contributions = 0, monthlyContributions = 0 }: Record<string, number>): CalculationResult => {
-  const annualValue = principal * (1 + rate / 100) ** years + contributions * (((1 + rate / 100) ** years - 1) / (rate / 100 || 1))
+  const annualValue = principal * (1 + rate / 100) ** years + annuityValue(contributions, rate, years)
   const monthlyRate = rate / 1200
   const months = years * 12
   const monthlyValue = monthlyContributions === 0 || monthlyRate === 0 ? monthlyContributions * months : monthlyContributions * (((1 + monthlyRate) ** months - 1) / monthlyRate)

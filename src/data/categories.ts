@@ -1,4 +1,4 @@
-import type { CalculatorCategory } from './calculators'
+import type { Calculator, CalculatorCategory } from './calculators'
 
 export interface Category {
   id: CalculatorCategory
@@ -45,3 +45,15 @@ export const categories: Category[] = [
     icon: '📐',
   },
 ]
+
+/**
+ * F-02 (Phase 3 corrective action): only show categories that have at least
+ * one calculator. The full `categories` list above is kept unchanged, so
+ * Everyday and Education reappear automatically when calculators are added
+ * to them — nothing is deleted from the project architecture.
+ */
+export function visibleCategories(allCalculators: Calculator[]): Category[] {
+  return categories.filter((category) =>
+    allCalculators.some((calculator) => calculator.category === category.id),
+  )
+}

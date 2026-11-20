@@ -120,3 +120,38 @@ describe('Phase 2 regression tests', () => {
     expect(calculate('scientific', { expression: 'sqrt(-1)' as unknown as number }).headline).toBe('Invalid expression')
   })
 })
+
+describe('Phase 3 corrective actions', () => {
+  it('F-01: compound interest includes annual contributions at 0% interest', () => {
+    // $1,000 + $100/year for 2 years at 0% = $1,200 (was $1,000 — contributions dropped)
+    expect(calculate('compound-interest', { principal: 1000, rate: 0, years: 2, contributions: 100 }).headline).toContain('1,200.00')
+  })
+  it('F-01: savings includes annual contributions at 0% and monthly mode stays correct', () => {
+    expect(calculate('savings', { principal: 1000, rate: 0, years: 2, contributions: 100, monthlyContributions: 0 }).headline).toContain('1,200.00')
+    // Monthly deposits at 0%: $1,000 + $100 x 24 months = $3,400 (already correct, must stay correct)
+    expect(calculate('savings', { principal: 1000, rate: 0, years: 2, contributions: 0, monthlyContributions: 100 }).headline).toContain('3,400.00')
+  })
+  it('F-01: investment return includes annual contributions at 0% interest', () => {
+    // $10,000 + $1,000/year for 10 years at 0% = $20,000 (was $10,000)
+    expect(calculate('investment-return', { principal: 10000, rate: 0, years: 10, contributions: 1000 }).headline).toContain('20,000.00')
+  })
+  it('F-01: retirement includes annual contributions at 0% interest', () => {
+    // $0 + $500/year for 30 years at 0% = $15,000 (was $0.00)
+    expect(calculate('retirement', { principal: 0, rate: 0, years: 30, contributions: 500 }).headline).toContain('15,000.00')
+  })
+  it('F-01: positive-interest calculations are unchanged', () => {
+    expect(calculate('compound-interest', { principal: 1000, rate: 10, years: 2, contributions: 0 }).headline).toContain('1,210.00')
+    expect(calculate('savings', { principal: 1000, rate: 5, years: 5, contributions: 100, monthlyContributions: 0 }).headline).toContain('1,828.84')
+    expect(calculate('savings', { principal: 1000, rate: 5, years: 5, contributions: 0, monthlyContributions: 100 }).headline).toContain('8,076.89')
+    expect(calculate('investment-return', { principal: 10000, rate: 7, years: 10, contributions: 1000 }).headline).toContain('33,487.96')
+    expect(calculate('retirement', { principal: 0, rate: 7, years: 30, contributions: 500 }).headline).toContain('47,230.39')
+  })
+  it('F-02: only categories with calculators are shown; definitions are preserved', async () => {
+    const { categories, visibleCategories } = await import('../src/data/categories')
+    // All six definitions still exist in the project architecture.
+    expect(categories.map((c) => c.id)).toEqual(['finance', 'health', 'math', 'everyday', 'education', 'conversion'])
+    // Only the four categories that have calculators are visible.
+    expect(visibleCategories(calculators).map((c) => c.id)).toEqual(['finance', 'health', 'math', 'conversion'])
+    expect(visibleCategories(calculators).length).toBe(4)
+  })
+})
