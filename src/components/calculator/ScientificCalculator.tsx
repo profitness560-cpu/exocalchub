@@ -75,6 +75,7 @@ export function ScientificCalculator() {
     { label: 'exp', insert: 'exp(', kind: 'fn', aria: 'exponential' },
     { label: '(', insert: '(', kind: 'fn', aria: 'open parenthesis' },
     { label: ')', insert: ')', kind: 'fn', aria: 'close parenthesis' },
+    { label: ',', insert: ',', kind: 'fn', aria: 'comma' },
     { label: '%', insert: '%', kind: 'fn', aria: 'percent' },
     { label: '⌫', insert: 'DEL', kind: 'action', aria: 'delete last character' },
     { label: 'C', insert: 'CLR', kind: 'action', aria: 'clear' },

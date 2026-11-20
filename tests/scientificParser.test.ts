@@ -77,3 +77,34 @@ describe('scientific calculator — site result shape', () => {
     expect(formatResult(1.41421356237)).toBe('1.41421356')
   })
 })
+
+describe('scientific parser — unary minus vs exponent precedence (independent review finding)', () => {
+  it('-2^2 is -(2^2) = -4, while (-2)^2 is 4', () => {
+    expect(evaluateScientific('-2^2')).toBe(-4)
+    expect(evaluateScientific('(-2)^2')).toBe(4)
+    expect(evaluateScientific('-2^3')).toBe(-8)
+    expect(evaluateScientific('-(2+3)^2')).toBe(-25)
+    expect(evaluateScientific('3*-2^2')).toBe(-12)
+    expect(evaluateScientific('-5!')).toBe(-120)
+  })
+
+  it('negative exponents and right-associativity still work', () => {
+    expect(evaluateScientific('2^-3')).toBe(0.125)
+    expect(evaluateScientific('2^3^2')).toBe(512)
+    expect(evaluateScientific('2^2!')).toBe(4)
+    expect(evaluateScientific('5!^2')).toBe(14400)
+    expect(evaluateScientific('sin(-30)')).toBe(-0.5)
+  })
+
+  it('two-argument functions: nth root and log with a base', () => {
+    expect(evaluateScientific('root(27,3)')).toBe(3)
+    expect(evaluateScientific('root(16,4)')).toBe(2)
+    expect(evaluateScientific('log(100,10)')).toBe(2)
+  })
+
+  it('the site result shape returns -4 for -2^2', () => {
+    expect(calculateScientific({ expression: '-2^2' }).headline).toBe('-4')
+    expect(calculateScientific({ expression: '(-2)^2' }).headline).toBe('4')
+    expect(calculateScientific({ expression: 'root(27,3)' }).headline).toBe('3')
+  })
+})

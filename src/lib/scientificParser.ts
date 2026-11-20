@@ -219,13 +219,13 @@ export function evaluateScientific(input: string, options: { angleMode?: AngleMo
   }
 
   function parseMulDiv(): number {
-    let left = parsePower()
+    let left = parseUnary()
     while (peek().type === 'op' && (peek().value === '*' || peek().value === '/' || peek().value === '%')) {
       const op = (next() as { value: string }).value
       if (peek().type === 'op' && peek().value === '+') {
         throw new CalcError(`Missing operand after '${op}'.`, 'INVALID_EXPRESSION')
       }
-      const right = parsePower()
+      const right = parseUnary()
       if (op === '*') left = left * right
       else if (op === '/') {
         if (right === 0) throw new CalcError('Division by zero: the expression does not produce a finite number.', 'DIVISION_BY_ZERO')
@@ -240,10 +240,10 @@ export function evaluateScientific(input: string, options: { angleMode?: AngleMo
   }
 
   function parsePower(): number {
-    const left = parseUnary()
+    const left = parsePostfix()
     if (peek().type === 'op' && (peek().value === '^' || peek().value === '**')) {
       next()
-      const right = parsePower() // right-associative: 2^3^2 = 2^(3^2) = 512
+      const right = parseUnary() // right-associative: 2^3^2 = 2^(3^2) = 512; also allows 2^-3
       return checkFinite(Math.pow(left, right))
     }
     return left
@@ -252,6 +252,7 @@ export function evaluateScientific(input: string, options: { angleMode?: AngleMo
   function parseUnary(): number {
     if (peek().type === 'op' && peek().value === '-') {
       next()
+      // The sign applies to the whole power that follows, so -2^2 = -(2^2) = -4.
       return -parseUnary()
     }
     if (peek().type === 'op' && peek().value === '+') {
@@ -262,7 +263,7 @@ export function evaluateScientific(input: string, options: { angleMode?: AngleMo
       }
       throw new CalcError("Missing operand after '+'.", 'INVALID_EXPRESSION')
     }
-    return parsePostfix()
+    return parsePower()
   }
 
   function parsePostfix(): number {
